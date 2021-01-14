@@ -37,7 +37,7 @@ func (h *Hotp) GenerateCode(secret string) string {
 		log.Println(err)
 	}
 	text := h.toBytes(h.Counter)
-	hash := h.hmac_sha1(sk, text)
+	hash := h.hmacSha1(sk, text)
 	code := h.truncate(hash, h.Digit)
 	//使其失效
 	h.Counter++
@@ -56,7 +56,7 @@ func (h *Hotp) toBytes(value int64) []byte {
 
 // https://tools.ietf.org/html/rfc4226
 // page 30
-func (h *Hotp) hmac_sha1(key, text []byte) []byte {
+func (h *Hotp) hmacSha1(key, text []byte) []byte {
 	client := hmac.New(sha1.New, key)
 	client.Write(text)
 	return client.Sum(nil)
