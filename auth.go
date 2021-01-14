@@ -21,6 +21,7 @@ type Auth interface {
 	VerifyCode(input int, code string) bool
 }
 
+// https://github.com/ozgur-soft/otp/blob/master/src/otp.go
 type OTP struct {
 	Secret  string
 	Digits  int
