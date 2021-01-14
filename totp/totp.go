@@ -1,12 +1,13 @@
 package totp
 
 import (
-	"go-otp/hotp"
+	"github.com/hb0730/go-opt/hotp"
 	"time"
 )
 
 //Totp
 //https://github.com/xycxmz/go-totp
+//https://tools.ietf.org/html/rfc6238
 type Totp struct {
 	// T0 in RFC6238, default 0 is OK
 	// 起始时间点的时间戳
@@ -26,7 +27,8 @@ func New() *Totp {
 }
 
 func (t *Totp) GenerateSecret() string {
-	h := &hotp.Hotp{}
+	//h := &hotp.Hotp{}
+	h := hotp.Hotp{}
 	return h.GenerateSecret()
 }
 
