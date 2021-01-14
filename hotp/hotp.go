@@ -44,7 +44,7 @@ func (h *Hotp) GenerateCode(secret string) string {
 	return code
 }
 
-func (h Hotp) VerifyCode(secret, value string) bool {
+func (h *Hotp) VerifyCode(secret, value string) bool {
 	return h.GenerateCode(secret) == value
 }
 

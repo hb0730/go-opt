@@ -2,7 +2,7 @@ package opt
 
 import (
 	"fmt"
-	"go-otp/totp"
+	"github.com/hb0730/go-opt/totp"
 	"log"
 	"testing"
 )
