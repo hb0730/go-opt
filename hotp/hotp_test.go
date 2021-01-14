@@ -8,26 +8,20 @@ import (
 
 func TestHotp_GenerateCode(t *testing.T) {
 	now := time.Now().UTC().Unix()
-	h := &Hotp{Counter: now, Digit: 6}
-	secret := h.GenerateSecret()
-	code := h.GenerateCode(secret)
+	h := NewHotp()
+	code := h.GenerateCode(int(now))
 	fmt.Println(code)
-}
-
-func TestHotp_GenerateSecret(t *testing.T) {
-	now := time.Now().UTC().Unix()
-	h := &Hotp{Counter: now, Digit: 6}
-	secret := h.GenerateSecret()
-	fmt.Println(secret)
 }
 
 func TestHotp_VerifyCode(t *testing.T) {
 	now := time.Now().UTC().Unix()
-	h := &Hotp{Counter: now, Digit: 6}
-	secret := h.GenerateSecret()
-	code := h.GenerateCode(secret)
-	h.Counter = now
-	b := h.VerifyCode(secret, code)
+	//h := &Hotp{Counter: now, Digit: 6}
+	h := NewHotp()
+	//secret := h.GenerateSecret()
+	code := h.GenerateCode(int(now))
+	b := h.VerifyCode(int(now), code)
 	fmt.Println(b)
-	b = h.VerifyCode(secret, code)
+	now++
+	b = h.VerifyCode(int(now), code)
+	fmt.Println(b)
 }

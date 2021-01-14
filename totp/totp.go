@@ -1,44 +1,30 @@
 package totp
 
 import (
-	"github.com/hb0730/go-opt/hotp"
-	"time"
+	"github.com/hb0730/go-opt"
 )
 
 //Totp
 //https://github.com/xycxmz/go-totp
 //https://tools.ietf.org/html/rfc6238
 type Totp struct {
-	// T0 in RFC6238, default 0 is OK
-	// 起始时间点的时间戳
-	T0 int
-	//TS  in RFC6238
-	// 哈希有效期的时间长度
-	TS    int
-	Digit int
+	opt.OTP
+	interval int
 }
 
-func New() *Totp {
-	return &Totp{
-		0,
-		30,
-		6,
-	}
+func NewTOTP() *Totp {
+	otp := opt.NewOTP(opt.GenerateSecret(), 6, nil)
+	return &Totp{OTP: otp, interval: 30}
 }
 
-func (t *Totp) GenerateSecret() string {
-	//h := &hotp.Hotp{}
-	h := hotp.Hotp{}
-	return h.GenerateSecret()
+func (t *Totp) GenerateCode(timestamp int) string {
+	return t.GenerateTOP(t.timecode(timestamp))
 }
 
-func (t *Totp) GenerateCode(secret string) string {
-	now := (time.Now().Unix() - int64(t.T0)) / int64(t.TS)
-	h := &hotp.Hotp{Counter: now, Digit: t.Digit}
-	return h.GenerateCode(secret)
+func (t *Totp) timecode(timestamp int) int {
+	return int(timestamp / t.interval)
 }
-func (t *Totp) VerifyCode(secret, value string) bool {
-	now := (time.Now().Unix() - int64(t.T0)) / int64(t.TS)
-	h := &hotp.Hotp{Counter: now, Digit: t.Digit}
-	return h.VerifyCode(secret, value)
+
+func (t *Totp) VerifyCode(timestamp int, value string) bool {
+	return t.GenerateCode(timestamp) == value
 }
