@@ -12,8 +12,16 @@ func TestGenerateSecret(t1 *testing.T) {
 	log.Println(secret)
 }
 func TestGenerateCode(t1 *testing.T) {
+	t := NewDefaultTOTP()
 	now := time.Now().UTC().Unix()
-	t := newOTP(GenerateSecret(), 6, nil)
-	code := t.generateOTP(int(now))
+	code := t.GenerateCode(int(now))
 	fmt.Println(code)
+}
+func TestVerifyCode(t1 *testing.T) {
+	t := NewDefaultTOTP()
+	now := time.Now().UTC().Unix()
+	code := t.GenerateCode(int(now))
+	now = time.Now().UTC().Unix()
+	b := t.VerifyCode(int(now), code)
+	fmt.Println(b)
 }
