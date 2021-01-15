@@ -1,6 +1,7 @@
-package hotp
+package opt
 
 import (
+	"crypto/sha512"
 	"fmt"
 	"testing"
 	"time"
@@ -8,17 +9,26 @@ import (
 
 func TestHotp_GenerateCode(t *testing.T) {
 	now := time.Now().UTC().Unix()
-	h := NewHotp()
+	h := NewDefaultHOTP()
 	code := h.GenerateCode(int(now))
 	fmt.Println(code)
 }
 
 func TestHotp_VerifyCode(t *testing.T) {
 	now := time.Now().UTC().Unix()
-	//h := &Hotp{Counter: now, Digit: 6}
-	h := NewHotp()
-	//secret := h.GenerateSecret()
+	h := NewDefaultHOTP()
 	code := h.GenerateCode(int(now))
+	b := h.VerifyCode(int(now), code)
+	fmt.Println(b)
+	now++
+	b = h.VerifyCode(int(now), code)
+	fmt.Println(b)
+}
+
+func TestNewHOTP(t *testing.T) {
+	h := NewHOTP(GenerateSecret(), 7, &Hasher{HashName: "", Digest: sha512.New})
+	now := time.Now().UTC().Unix()
+	code := h.generateOTP(int(now))
 	b := h.VerifyCode(int(now), code)
 	fmt.Println(b)
 	now++

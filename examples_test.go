@@ -13,7 +13,7 @@ func TestGenerateSecret(t1 *testing.T) {
 }
 func TestGenerateCode(t1 *testing.T) {
 	now := time.Now().UTC().Unix()
-	t := NewOTP(GenerateSecret(), 6, nil)
-	code := t.GenerateTOP(int(now))
+	t := newOTP(GenerateSecret(), 6, nil)
+	code := t.generateOTP(int(now))
 	fmt.Println(code)
 }

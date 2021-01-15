@@ -1,4 +1,4 @@
-package totp
+package opt
 
 import (
 	"fmt"
@@ -7,14 +7,14 @@ import (
 )
 
 func TestTotp_GenerateCode(t1 *testing.T) {
-	t := NewTOTP()
+	t := NewDefaultHOTP()
 	now := time.Now().UTC().Unix()
 	code := t.GenerateCode(int(now))
 	fmt.Println(code)
 }
 
 func TestTotp_VerifyCode2(t1 *testing.T) {
-	t := NewTOTP()
+	t := NewDefaultHOTP()
 	now := time.Now().UTC().Unix()
 	code := t.GenerateCode(int(now))
 	fmt.Println(code)
@@ -23,7 +23,7 @@ func TestTotp_VerifyCode2(t1 *testing.T) {
 }
 
 func TestTotp_VerifyCode(t1 *testing.T) {
-	t := NewTOTP()
+	t := NewDefaultHOTP()
 	now := time.Now().UTC().Unix()
 	code := t.GenerateCode(int(now))
 	fmt.Println(code)
@@ -33,7 +33,7 @@ func TestTotp_VerifyCode(t1 *testing.T) {
 }
 
 func TestTotp_VerifyCodeError(t1 *testing.T) {
-	t := NewTOTP()
+	t := NewDefaultHOTP()
 	now := time.Now().UTC().Unix()
 	code := t.GenerateCode(int(now))
 	fmt.Println(code)

@@ -23,10 +23,9 @@ type Auth interface {
 
 // https://github.com/ozgur-soft/otp/blob/master/src/otp.go
 type OTP struct {
-	Secret  string
-	Digits  int
-	Content []byte
-	Hasher  *Hasher
+	secret string
+	digits int
+	hasher *Hasher
 }
 
 type Hasher struct {
@@ -34,7 +33,7 @@ type Hasher struct {
 	Digest   func() hash.Hash
 }
 
-func NewOTP(secret string, digits int, hasher *Hasher) OTP {
+func newOTP(secret string, digits int, hasher *Hasher) OTP {
 	if hasher == nil {
 		hasher = &Hasher{
 			HashName: "sha1",
@@ -42,29 +41,30 @@ func NewOTP(secret string, digits int, hasher *Hasher) OTP {
 		}
 	}
 	return OTP{
-		Secret: secret,
-		Digits: digits,
-		Hasher: hasher,
+		secret: secret,
+		digits: digits,
+		hasher: hasher,
 	}
 }
 
 func (o *OTP) byteSecret() []byte {
-	missingPadding := len(o.Secret) % 8
+	missingPadding := len(o.secret) % 8
 	if missingPadding != 0 {
-		o.Secret = o.Secret + strings.Repeat("=", 8-missingPadding)
+		o.secret = o.secret + strings.Repeat("=", 8-missingPadding)
 	}
-	sk, err := base32.StdEncoding.DecodeString(o.Secret)
+	sk, err := base32.StdEncoding.DecodeString(o.secret)
 	if err != nil {
 		log.Println(err)
 	}
 	return sk
 }
 
-func (o *OTP) GenerateTOP(input int) string {
+//OTP = HOTP(K, T)
+func (o *OTP) generateOTP(input int) string {
 	if input < 0 {
 		panic("input must be positive integer")
 	}
-	hasher := hmac.New(o.Hasher.Digest, o.byteSecret())
+	hasher := hmac.New(o.hasher.Digest, o.byteSecret())
 	hasher.Write(Itob(input))
 	hmacHash := hasher.Sum(nil)
 	offset := int(hmacHash[len(hmacHash)-1] & 0xf)
@@ -72,8 +72,8 @@ func (o *OTP) GenerateTOP(input int) string {
 		((int(hmacHash[offset+1] & 0xff)) << 16) |
 		((int(hmacHash[offset+2] & 0xff)) << 8) |
 		(int(hmacHash[offset+3]) & 0xff)
-	code = code % int(math.Pow10(o.Digits))
-	return fmt.Sprintf(fmt.Sprintf("%%0%dd", o.Digits), code)
+	code = code % int(math.Pow10(o.digits))
+	return fmt.Sprintf(fmt.Sprintf("%%0%dd", o.digits), code)
 }
 
 func GenerateSecret() string {
