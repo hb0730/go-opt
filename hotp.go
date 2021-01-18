@@ -35,3 +35,16 @@ func (h *HOTP) GenerateCode(count int) string {
 func (h *HOTP) VerifyCode(count int, value string) bool {
 	return h.GenerateCode(count) == value
 }
+
+//ProvisioningUri create uri
+func (h *HOTP) ProvisioningUri(accountName, issuerName string, initialCount int) string {
+	return BuildUri(
+		OtpTypeHotp,
+		h.secret,
+		accountName,
+		issuerName,
+		h.hasher.HashName,
+		initialCount,
+		h.digits,
+		0)
+}

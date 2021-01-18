@@ -9,6 +9,7 @@ import (
 	"log"
 	"math"
 	"math/rand"
+	"net/url"
 	"strings"
 	"time"
 )
@@ -32,6 +33,11 @@ type Hasher struct {
 	HashName string
 	Digest   func() hash.Hash
 }
+
+const (
+	OtpTypeTotp = "totp"
+	OtpTypeHotp = "hotp"
+)
 
 func newOTP(secret string, digits int, hasher *Hasher) OTP {
 	if hasher == nil {
@@ -83,6 +89,34 @@ func GenerateSecret() string {
 		return ""
 	}
 	return strings.ToUpper(base32.StdEncoding.EncodeToString(s))
+}
+
+//BuildUri https://github.com/google/google-authenticator/wiki/Key-Uri-Format
+func BuildUri(otpType, secret, accountName, issuerName, algorithm string, initialCount, digits, period int) string {
+	if otpType != OtpTypeTotp && otpType != OtpTypeHotp {
+		panic("otp type error, got " + otpType)
+	}
+	urlParams := make([]string, 0)
+	urlParams = append(urlParams, "secret="+secret)
+	if otpType == OtpTypeHotp {
+		urlParams = append(urlParams, fmt.Sprintf("counter=%d", initialCount))
+	}
+	label := url.QueryEscape(accountName)
+	if issuerName != "" {
+		issuerNameEscape := url.QueryEscape(issuerName)
+		label = issuerNameEscape + ":" + label
+		urlParams = append(urlParams, "issuer="+issuerNameEscape)
+	}
+	if algorithm != "" && algorithm != "sha1" {
+		urlParams = append(urlParams, "algorithm="+strings.ToUpper(algorithm))
+	}
+	if digits != 0 && digits != 6 {
+		urlParams = append(urlParams, fmt.Sprintf("digits=%d", digits))
+	}
+	if period != 0 && period != 30 {
+		urlParams = append(urlParams, fmt.Sprintf("period=%d", period))
+	}
+	return fmt.Sprintf("otpauth://%s/%s?%s", otpType, label, strings.Join(urlParams, "&"))
 }
 func Itob(integer int) []byte {
 	byteArr := make([]byte, 8)

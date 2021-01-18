@@ -35,3 +35,11 @@ func TestNewHOTP(t *testing.T) {
 	b = h.VerifyCode(int(now), code)
 	fmt.Println(b)
 }
+
+func TestHOTP_ProvisioningUri(t *testing.T) {
+	now := time.Now().UTC().Unix()
+	h := NewDefaultHOTP()
+	h.secret = GenerateSecret()
+	uri := h.ProvisioningUri("hb0730", "test", int(now))
+	fmt.Println(uri)
+}

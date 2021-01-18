@@ -48,3 +48,16 @@ func (t *TOTP) NowWithExpiration() (string, int64) {
 	expirationTime := (timeCodeInt64 + 1) * interval64
 	return t.generateOTP(int(timeCodeInt64)), expirationTime
 }
+
+//ProvisioningUri create uri
+func (t *TOTP) ProvisioningUri(accountName, issuerName string) string {
+	return BuildUri(
+		OtpTypeTotp,
+		t.secret,
+		accountName,
+		issuerName,
+		t.hasher.HashName,
+		0,
+		t.digits,
+		t.interval)
+}
